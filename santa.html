@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<script>
+/* Look ma, no jQuery! */
+const names = [
+    "Adam",
+    "Dan",
+    "Dave",
+    "Joey",
+    "Luke"
+];
+
+const shuffle = (names) => {
+    let array = [...names];
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+const addResultElement = (container, from, to) => {
+    const from_elem = document.createElement('dt')
+    const to_elem = document.createElement('dd')
+
+    from_elem.textContent = from;
+    to_elem.textContent = to;
+    container.appendChild(from_elem);
+    container.appendChild(to_elem);
+
+}
+
+const checkResults = (results) => {
+    const no_self_matches = results.every((result, idx) => result !== names[idx]);
+    return no_self_matches;
+}
+
+const populateResults = () => {
+    let recievers = shuffle(names);
+    while (!checkResults(recievers)) {
+        console.log("Retrying shuffle");
+        recievers = shuffle(names);
+    }
+
+    results = names.map((from, idx) => [from, recievers[idx]])
+
+
+
+    const container = document.getElementById('results');
+    // Empty container
+    while(container.firstChild){
+        container.removeChild(container.firstChild);
+    }
+    for (var result of results) {
+        const from = result[0];
+        const to = result[1];
+        addResultElement(container, from, to);
+    }
+}
+
+const init = () => {
+    populateResults();
+    document.getElementById("regenerate").addEventListener("click", populateResults);
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+
+</script>
+<style>
+
+html {
+    font-family: sans-serif;
+}
+
+h1 {
+    font-size: 3em;
+}
+
+dl#results {
+    font-size: 1.5em;
+    padding: 2em;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+dl#results dt::before {
+    font-weight: bold;
+    content: "🎅 ";
+}
+dl#results dd::before {
+    font-weight: bold;
+    content: "🎁 ";
+
+}
+
+button#regenerate {
+    font-size: 2em;
+}
+</style>
+</head>
+<body>
+    <h1>🙈 Secret Santa 🎅</h1>
+    <dl id="results"></dl>
+    <button id="regenerate">🔀 Reshuffle</button>
+    <p>🎅: Sender</p>
+    <p>🎁: Recipient</p>
+</body>
+</html>
